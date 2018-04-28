@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: config
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-peer1:8761/eureka/ # TODO:overwrite
+  instance:
+    instance-id: ${spring.application.name}:${spring.cloud.client.ipAddress}:${server.port}
+    prefer-ip-address: true

@@ -1,0 +1,141 @@
+# The global properties,can be seen by all config client
+
+##  configs
+#  ZOOKEEPER_HOST (default : localhost)
+#  ZOOKEEPER_PORT 2181
+#  KAFKA_HOST (default : localhost)
+#  KAFKA_PORT 9092
+#  RABBITMQ_HOST (default : localhost)
+#  RABBITMQ_PORT 5672
+#  REDIS_HOST (default : localhost)
+#  REDIS_PORT 6379
+
+info:
+  version: '@project.version@'
+
+logging:
+  level:
+    ROOT: INFO
+    # FIXME: remove it if fixed.see https://github.com/spring-projects/spring-amqp/pull/656
+    org.springframework.amqp.rabbit.listener.BlockingQueueConsumer: INFO 
+    org.springframework.security: DEBUG
+    me.shufork: DEBUG
+
+# spring-boot--actuator
+# see https://docs.spring.io/spring-boot/docs/1.5.10.RELEASE/reference/htmlsingle/#boot-features-security-actuator
+# see https://docs.spring.io/spring-boot/docs/1.5.10.RELEASE/reference/htmlsingle/#production-ready
+management:
+  security:
+    enabled: false
+
+security:
+  user:
+    name: admin
+    password: admin
+  basic:
+    enabled: false
+  ignored: /swagger**,/swagger**/**,/webjars/**,/v2/**
+
+spring:
+  jackson:
+    date-format: "yyyy-MM-dd HH-mm-ss"
+    jackson:
+      time-zone: GMT+8
+    serialization:
+      write_dates_as_timestamps: false
+  cloud:
+    config: # 允许应用覆盖任何服务端配置
+      allowOverride: true
+      overrideNone: true
+      overrideSystemProperties: false
+    stream: # see https://docs.spring.io/spring-cloud-stream/docs/current/reference/htmlsingle
+      default:
+        content-type: application/json
+      defaultBinder: rabbit
+#     rabbit: set by application
+
+#      kafka:
+#        binder:
+#          zkNodes: ${ZOOKEEPER_HOST:localhost}
+#          defaultZkPort: 2181
+#          brokers: ${KAFKA_HOST:localhost}
+#          defaultBrokerPort: 9092
+#          autoCreateTopics: true
+  rabbitmq:
+    host: 192.168.0.166
+    port: 5672
+    username: guest
+    password: guest
+    publisher-confirms: true
+    publisher-returns: true
+    listener:
+      simple: #  NestedConfigurationProperty for 1.5.10+
+        default-requeue-rejected: true
+        prefetch: 1
+        transaction-size: 1
+        retry:
+          enabled: true
+          max-attempts: 3
+    template:
+      retry:
+        enabled: true
+        max-attempts: 3
+  redis:
+    host: 192.168.0.51
+    port: 6379
+    database: 0
+    pool:
+      max-active: 10
+      max-idle: 10
+      max-wait: -1
+      min-idle: 0
+  cache:
+    type: redis
+  jpa:
+    database: mysql
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        strategy: org.springframework.boot.orm.jpa.hibernate.SpringNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+  sleuth:
+    sampler:
+      percentage: 1
+  boot:
+    admin: # see https://codecentric.github.io/spring-boot-admin/1.5.0/#spring-boot-admin-client
+      url: http://localhost:28085
+      client:
+        enabled: false
+        prefer-ip: true
+
+ribbon:
+  ConnectTimeout: 600000 # millisecond
+  ReadTimeout: 600000 # millisecond
+  eureka:
+    enabled: true
+
+feign:
+  hystrix:
+    enabled: true
+  httpclient:
+    enabled: true
+
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          strategy: THREAD
+          thread:
+            timeoutInMilliseconds: 60000 # millisecond
+            interruptOnTimeout: true
+      circuitBreaker:
+        enabled: true
+        errorThresholdPercentage: 60
+      fallback:
+        enabled: true

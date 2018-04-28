@@ -1,0 +1,12 @@
+mail:
+  from: 'admin@shufork.com'
+
+spring:
+  mail:
+    host: smtp.xxxx.net # TODO : overwrite
+    username: xxxx # TODO : overwrite
+    password: xxxx # TODO : overwrite
+    properties:
+      mail:
+        smtp:
+          auth: true

@@ -1,0 +1,31 @@
+
+spring:
+  application:
+    name: admin
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.cloud.client.ipAddress}:${server.port}
+---
+spring:
+  profiles: dev
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+---
+spring:
+  profiles: test
+
+## --spring.profiles.active=test
+## --eureka.client.service-url.defaultZone="http://192.168.75.130:8761/eureka/,http://192.168.75.130:8762/eureka/"
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-peer1:8761/eureka/,http://eureka-peer2:8762/eureka/ # TODO:overwrite
+  instance:
+    prefer-ip-address: true

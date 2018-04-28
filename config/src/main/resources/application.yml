@@ -1,0 +1,70 @@
+###==========================================================================================###
+## 部署
+#  重要的外部参数
+#  --eureka.client.service-url.defaultZone="http://192.168.0.166:8761/eureka/,http://192.168.0.166:8762/eureka/"
+#  --spring.cloud.config.server.git.uri=
+#  --spring.cloud.config.server.git.search-paths=
+#  --RABBITMQ_HOST=$rabbitmq_host
+#  --RABBITMQ_PORT=$rabbitmq_port
+#
+#  可选的外部参数
+#  -Dspring.cloud.inetutils.preferredNetworks=192.168.0
+#  --spring.profiles.active=fast-discovery
+###==========================================================================================###
+
+
+server:
+  port: 18001
+
+spring:
+#  profiles:
+#    active: native
+#  cloud:
+#    config:
+#      server:
+#        native:
+#          search-locations: classpath:/config/jaracks
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://gitee.com/wsa10054/config-repo
+          search-paths: config                                 # git仓库地址下的相对地址,可以配置多个，用','分割
+          username:                                             # git仓库的账号
+          password:                                             # git仓库的密码
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: guest
+    password: guest
+
+security:
+  user:
+    name: shufork
+    password: shufork
+
+management:
+  security:
+    enabled: false
+
+
+---
+spring:
+  profiles: dev
+
+
+---
+spring:
+  profiles: test
+
+---
+spring:
+  profiles: fast-discovery
+
+eureka:
+  client:
+    healthcheck:
+      enabled: true
+  instance:
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
